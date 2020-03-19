@@ -1,6 +1,7 @@
 import selectors
 import socket
 import logging
+import types
 
 
 host = 'localhost'
@@ -12,14 +13,14 @@ logging.basicConfig(filename='dump.log', format='%(asctime)s %(levelname)s %(mes
 lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 lsock.bind((host, port))
 lsock.listen()
-logging.info('Listening on host "%s" and port "%s".' % (host, port))
+logging.info('Listening on %s:%s.' % (host, port))
 lsock.setblocking(False)
 sel.register(lsock, selectors.EVENT_READ)
 
 
 def accept_wrapper(sock):
     conn, addr = sock.accept()  # Should be ready to read.
-    logging.info('Accepted connection from %s.' % addr)
+    logging.info('Accepted connection from %s:%s.' % (addr[0], addr[1]))
     conn.setblocking(False)
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
@@ -34,12 +35,12 @@ def service_connection(key, mask):
         if recv_data:
             data.outb += recv_data
         else:
-            logging.info('Closing connection to %s.' % data.addr)
+            logging.info('Closing connection to %s:%s.' % (data.addr[0], data.addr[1]))
             sel.unregister(sock)
             sock.close()
     if mask & selectors.EVENT_WRITE:
         if data.outb:
-            logging.info('Echoing %s to %s' % (repr(data.outb), data.addr))
+            logging.info('Echoing "%s" to %s:%s' % (repr(data.outb), data.addr[0], data.addr[1]))
             sent = sock.send(data.outb)  # Should be ready to write.
             data.outb = data.outb[sent:]
 
