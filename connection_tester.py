@@ -1,15 +1,26 @@
+"""
+This is a small testing app for ui_com. It establishes
+a specified amount of connections to the server and sends
+two byte strings per connection; test information gets printed
+to terminal.
+"""
+
+
 import socket
 import selectors
 import types
 
 
-host = 'localhost'
-port = 65432
+HOST = 'localhost'
+PORT = 65432
 sel = selectors.DefaultSelector()
-messages = [b'Message 1 from client.', b'Message 2 from client.']
+MESSAGES = [b'Message 1 from client.', b'Message 2 from client.']
 
 
 def start_connections(host, port, num_conns):
+    """
+    Establishes connections to the server.
+    """
     server_addr = (host, port)
     for i in range(0, num_conns):
         connid = i + 1
@@ -19,14 +30,17 @@ def start_connections(host, port, num_conns):
         sock.connect_ex(server_addr)
         events = selectors.EVENT_READ | selectors.EVENT_WRITE
         data = types.SimpleNamespace(connid=connid,
-                                     msg_total=sum(len(m) for m in messages),
+                                     msg_total=sum(len(m) for m in MESSAGES),
                                      recv_total=0,
-                                     messages=list(messages),
+                                     messages=list(MESSAGES),
                                      outb=b'')
         sel.register(sock, events, data=data)
 
 
 def service_connection(key, mask):
+    """
+    Services established connections. (Either sends or receives the byte strings.)
+    """
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
@@ -47,7 +61,7 @@ def service_connection(key, mask):
             data.outb = data.outb[sent:]
 
 
-start_connections(host, port, int(input('Input number of connections: ')))
+start_connections(HOST, PORT, int(input('Input number of connections: ')))
 
 try:
     while True:
