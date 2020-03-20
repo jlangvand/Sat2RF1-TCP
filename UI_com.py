@@ -45,10 +45,15 @@ def service_connection(key, mask):
             data.outb = data.outb[sent:]
 
 
-while True:
-    events = sel.select()
-    for key, mask in events:
-        if key.data is None:
-            accept_wrapper(key.fileobj)
-        else:
-            service_connection(key, mask)
+try:
+    while True:
+        events = sel.select()
+        for key, mask in events:
+            if key.data is None:
+                accept_wrapper(key.fileobj)
+            else:
+                service_connection(key, mask)
+except KeyboardInterrupt:
+    print('Caught keyboard interrupt. Exiting...')
+finally:
+    sel.close()
