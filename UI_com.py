@@ -63,6 +63,7 @@ def service_connection(key, mask):
                 sock.close()
                 break
         # TODO: Send the received package where it should be.
+        logging.info('Package received: ' + recv_data)
         data.outb += recv_data
     if mask & selectors.EVENT_WRITE:
         # TODO: Change from echoing to passing packages.
