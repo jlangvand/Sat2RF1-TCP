@@ -1,5 +1,5 @@
 """
-This is a small testing app for ui_com. It establishes
+This is a small testing script for ui_com. It establishes
 a connection to the server and sends two byte strings;
 test information gets printed to the terminal.
 """
@@ -14,6 +14,6 @@ PORT = 65432
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     s.sendall(b'Hello, world')
-    data = s.recv(1024)
+    data = s.recv(250)
 
 print('Received', repr(data))
