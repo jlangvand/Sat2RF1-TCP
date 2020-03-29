@@ -63,8 +63,9 @@ def service_connection(key, mask):
                 sock.close()
                 break
         # TODO: Send the received package where it should be.
-        logging.info('Package received: ' + recv_data)
-        data.outb += recv_data
+        if recv_data:
+            logging.info('Package received: ' + repr(recv_data))
+            data.outb += recv_data
     if mask & selectors.EVENT_WRITE:
         # TODO: Change from echoing to passing packages.
         if data.outb:
@@ -79,7 +80,7 @@ try:
         # Keyboard interrupts does not seem to work when
         # using Windows. This can be remedied by setting a
         # timeout (e.g. sel.select(timeout=5)).
-        events = sel.select()
+        events = sel.select(timeout=3)
         for key, mask in events:
             try:
                 if key.data is None:
