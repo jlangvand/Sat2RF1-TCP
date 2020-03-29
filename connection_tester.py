@@ -14,7 +14,12 @@ import types
 HOST = 'localhost'
 PORT = 65432
 sel = selectors.DefaultSelector()
-MESSAGES = [b'Message 1 from client.', b'Message 2 from client.']
+m1 = b''
+m2 = b''
+for i in range(0,250):
+    m1 += b'a'
+    m2 += b'b'
+MESSAGES = [m1, m2]
 
 
 def start_connections(host, port, num_conns):
@@ -56,7 +61,7 @@ def service_connection(key, mask):
         if not data.outb and data.messages:
             data.outb = data.messages.pop(0)
         if data.outb:
-            print('Sending "%s" to connection %s' % (repr(data.outb), data.connid))
+            print('Sending %s to connection %s' % (repr(data.outb), data.connid))
             sent = sock.send(data.outb)  # Should be ready to write
             data.outb = data.outb[sent:]
 
