@@ -17,18 +17,18 @@ logging.basicConfig(filename='dump.log',
 # Creates a socket listening for connections at HOST:PORT.
 HOST = 'localhost'
 PORT = 65432
-listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-listening_socket.bind((HOST, PORT))
-listening_socket.listen()
+lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+lsock.bind((HOST, PORT))
+lsock.listen()
 logging.info('Listening on %s:%s.', HOST, PORT)
 
 
-def accept_connection(socket):
+def accept_connection(listening_socket):
     """
     Accepts an incoming connection.
     """
     logging.info('Awaiting incoming connection.')
-    connection, address = socket.accept() # Blocks (awaits connection attempt).
+    connection, address = listening_socket.accept() # Blocks (awaits connection attempt).
     logging.info('Accepted connection from %s:%s.', address[0], address[1])
     return connection, address
 
@@ -42,7 +42,8 @@ def serve_connection(connection, address):
     while len(received) < 250:
         data = connection.recv(250) # Blocks (awaits data).
         if not data:
-            logging.warning('Connection to %s:%s was closed from client side.', address[0], address[1])
+            logging.warning('Connection to %s:%s was closed from client side.',
+                            address[0], address[1])
             connection.close()
             return False
         received.append(data)
@@ -55,15 +56,16 @@ def serve_connection(connection, address):
 # The server loop.
 try:
     conn = None # Just to make sure it's defined (for error handling).
-    conn, ADDR = accept_connection(listening_socket)
+    conn, ADDR = accept_connection(lsock)
     while True:
         try:
             if not serve_connection(conn, ADDR):
-                conn, ADDR = accept_connection(listening_socket)
+                conn, ADDR = accept_connection(lsock)
         except OSError:
-            logging.exception('Connection to %s:%s was terminated; a socket error occured: ', ADDR[0], ADDR[1])
+            logging.exception('Connection to %s:%s was terminated; a socket error occured: ',
+                              ADDR[0], ADDR[1])
             conn.close()
-            conn, ADDR = accept_connection(listening_socket)
+            conn, ADDR = accept_connection(lsock)
 
 except KeyboardInterrupt:
     logging.info('Keyboard interrupt caught.')
@@ -74,8 +76,8 @@ except:
 finally:
     if conn is None:
         logging.info('Closing listening socket.\n')
-        listening_socket.close()
+        lsock.close()
     else:
         logging.info('Closing connection to %s:%s and listening socket.\n', ADDR[0], ADDR[1])
         conn.close()
-        listening_socket.close()
+        lsock.close()
