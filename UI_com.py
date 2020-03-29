@@ -8,28 +8,74 @@ import socket
 import logging
 
 
-HOST = 'localhost'
-PORT = 65432
+# Defines the logging format.
 logging.basicConfig(filename='dump.log',
                     format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.INFO)
 
 
-lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-lsock.bind((HOST, PORT))
-lsock.listen()
+# Creates a socket listening for connections at HOST:PORT.
+HOST = 'localhost'
+PORT = 65432
+listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listening_socket.bind((HOST, PORT))
+listening_socket.listen()
 logging.info('Listening on %s:%s.', HOST, PORT)
-conn, ADDR = lsock.accept() # Blocks (awaits connection attempt)
-logging.info('Accepted connection from %s:%s.', ADDR[0], ADDR[1])
 
+
+def accept_connection(socket):
+    """
+    Accepts an incoming connection.
+    """
+    logging.info('Awaiting incoming connection.')
+    connection, address = socket.accept() # Blocks (awaits connection attempt).
+    logging.info('Accepted connection from %s:%s.', address[0], address[1])
+    return connection, address
+
+
+def serve_connection(connection, address):
+    """
+    Serves an established connection.
+    """
+    received = []
+    # TODO: Correct the package size; 250 is a placeholder.
+    while len(received) < 250:
+        data = connection.recv(250) # Blocks (awaits data).
+        if not data:
+            logging.warning('Connection to %s:%s was closed from client side.', address[0], address[1])
+            connection.close()
+            return False
+        received.append(data)
+    # TODO: Change from echo back to client to pass to radio interface.
+    logging.info('Echoing %s to %s:%s.', repr(data), address[0], address[1])
+    connection.sendall(b''.join(received))
+    return True
+
+
+# The server loop.
 try:
+    conn = None # Just to make sure it's defined (for error handling).
+    conn, ADDR = accept_connection(listening_socket)
     while True:
-        recv_data = conn.recv(1024) # Blocks (awaits data)
-        logging.info('Echoing "%s" to %s:%s.', repr(recv_data), ADDR[0], ADDR[1])
-        conn.send(recv_data)
+        try:
+            if not serve_connection(conn, ADDR):
+                conn, ADDR = accept_connection(listening_socket)
+        except OSError:
+            logging.exception('Connection to %s:%s was terminated; a socket error occured: ', ADDR[0], ADDR[1])
+            conn.close()
+            conn, ADDR = accept_connection(listening_socket)
+
 except KeyboardInterrupt:
-    print('Caught keyboard interrupt. Exiting...')
+    logging.info('Keyboard interrupt caught.')
+
+except:
+    logging.critical('An unexpected error occured: ', exc_info=True)
+
 finally:
-    logging.info('Closing connection to %s:%s and listening socket.', ADDR[0], ADDR[1])
-    conn.close()
-    lsock.close()
+    if conn is None:
+        logging.info('Closing listening socket.\n')
+        listening_socket.close()
+    else:
+        logging.info('Closing connection to %s:%s and listening socket.\n', ADDR[0], ADDR[1])
+        conn.close()
+        listening_socket.close()
