@@ -1,81 +1,73 @@
 """
 This is the actual server. At the moment it is a simple
-example and only echos messeges back to the client.
+example and only echos messeges back to the client(s).
 """
 
 
+import selectors
 import socket
 import logging
+import types
 
 
-# Defines the logging format.
+HOST = 'localhost'
+PORT = 65432
+sel = selectors.DefaultSelector()
 logging.basicConfig(filename='dump.log',
                     format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.INFO)
 
 
-# Creates a socket listening for connections at HOST:PORT.
-HOST = 'localhost'
-PORT = 65432
-listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-listening_socket.bind((HOST, PORT))
-listening_socket.listen()
+lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+lsock.bind((HOST, PORT))
+lsock.listen()
 logging.info('Listening on %s:%s.', HOST, PORT)
+lsock.setblocking(False)
+sel.register(lsock, selectors.EVENT_READ)
 
 
-def accept_connection(socket):
+def accept_wrapper(sock):
     """
-    Accepts an incoming connection.
+    Accepts incoming connections.
     """
-    logging.info('Awaiting incoming connection.')
-    connection, address = socket.accept() # Blocks (awaits connection attempt).
-    logging.info('Accepted connection from %s:%s.', address[0], address[1])
-    return connection, address
+    conn, addr = sock.accept()  # Should be ready to read.
+    logging.info('Accepted connection from %s:%s.', addr[0], addr[1])
+    conn.setblocking(False)
+    data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(conn, events, data=data)
 
 
-def serve_connection(connection, address):
+def service_connection(key, mask):
     """
-    Serves an established connection.
+    Services established connections. (Echoes messeges.)
     """
-    received = []
-    # TODO: Correct the package size; 250 is a placeholder.
-    while len(received) < 250:
-        data = connection.recv(250) # Blocks (awaits data).
-        if not data:
-            logging.warning('Connection to %s:%s was closed from client side.', address[0], address[1])
-            connection.close()
-            return False
-        received.append(data)
-    # TODO: Change from echo back to client to pass to radio interface.
-    logging.info('Echoing %s to %s:%s.', repr(data), address[0], address[1])
-    connection.sendall(b''.join(received))
-    return True
+    sock = key.fileobj
+    data = key.data
+    if mask & selectors.EVENT_READ:
+        recv_data = sock.recv(1024)  # Should be ready to read.
+        if recv_data:
+            data.outb += recv_data
+        else:
+            logging.info('Closing connection to %s:%s.', data.addr[0], data.addr[1])
+            sel.unregister(sock)
+            sock.close()
+    if mask & selectors.EVENT_WRITE:
+        if data.outb:
+            logging.info('Echoing "%s" to %s:%s', repr(data.outb), data.addr[0], data.addr[1])
+            sent = sock.send(data.outb)  # Should be ready to write.
+            data.outb = data.outb[sent:]
 
 
-# The server loop.
 try:
-    conn = None # Just to make sure it's defined (for error handling).
-    conn, ADDR = accept_connection(listening_socket)
     while True:
-        try:
-            if not serve_connection(conn, ADDR):
-                conn, ADDR = accept_connection(listening_socket)
-        except OSError:
-            logging.exception('Connection to %s:%s was terminated; a socket error occured: ', ADDR[0], ADDR[1])
-            conn.close()
-            conn, ADDR = accept_connection(listening_socket)
-
+        events = sel.select()
+        for key, mask in events:
+            if key.data is None:
+                accept_wrapper(key.fileobj)
+            else:
+                service_connection(key, mask)
 except KeyboardInterrupt:
-    logging.info('Keyboard interrupt caught.')
-
-except:
-    logging.critical('An unexpected error occured: ', exc_info=True)
-
+    print('Caught keyboard interrupt. Exiting...')
 finally:
-    if conn is None:
-        logging.info('Closing listening socket.\n')
-        listening_socket.close()
-    else:
-        logging.info('Closing connection to %s:%s and listening socket.\n', ADDR[0], ADDR[1])
-        conn.close()
-        listening_socket.close()
+    sel.close()
