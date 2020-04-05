@@ -77,9 +77,10 @@ def service_connection(key, mask):
 # The server loop.
 try:
     while True:
-        # Keyboard interrupts does not seem to work when
-        # using Windows. This can be remedied by setting a
-        # timeout (e.g. sel.select(timeout=5)).
+        # Keyboard interrupts do not seem to work, at least when
+        # using Windows. This can be remedied by setting a timeout
+        # (e.g. sel.select(timeout=5)). Use this with caution though,
+        # as it might have unintended consequences.
         events = sel.select(timeout=3)
         for key, mask in events:
             try:
@@ -90,6 +91,7 @@ try:
             except OSError:
                 logging.exception('A socket error was caught: ')
 except KeyboardInterrupt:
+    # TODO: Consider changing to a more reliable way to shut down.
     logging.info('Keyboard interrupt caught.')
 except Exception:
     logging.critical('An unexpected error occured: ', exc_info=True)
