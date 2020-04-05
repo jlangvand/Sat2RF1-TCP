@@ -1,15 +1,13 @@
 """
-This is a small testing app for ui_com. It establishes
+This is a small testing script for ui_com. It establishes
 a specified amount of connections to the server and sends
-two byte strings per connection; test information gets printed
-to terminal.
+two byte strings per connection. Test information gets printed
+to the terminal.
 """
-
 
 import socket
 import selectors
 import types
-
 
 HOST = 'localhost'
 PORT = 65432

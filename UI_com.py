@@ -1,20 +1,17 @@
 """
-This is the actual server. At the moment it is a simple
-example and only echos messeges back to the client(s).
+This is the server script. At the moment it
+only echos messeges back to the client(s).
 """
-
 
 import selectors
 import socket
 import logging
 import types
 
-
 # Defines logging format.
 logging.basicConfig(filename='dump.log',
                     format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.INFO)
-
 
 # Creates a socket listening on HOST:PORT.
 HOST = 'localhost'
@@ -24,7 +21,6 @@ lsock.setblocking(False)
 lsock.bind((HOST, PORT))
 lsock.listen()
 logging.info('Listening on %s:%s.', HOST, PORT)
-
 
 # Creates a selector which decides when to create new connections,
 # receive data or send data.
@@ -81,7 +77,7 @@ try:
         # using Windows. This can be remedied by setting a timeout
         # (e.g. sel.select(timeout=5)). Use this with caution though,
         # as it might have unintended consequences.
-        events = sel.select(timeout=3)
+        events = sel.select()
         for key, mask in events:
             try:
                 if key.data is None:
