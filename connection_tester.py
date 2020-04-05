@@ -1,5 +1,5 @@
 """
-This is a small testing script for ui_com. It establishes
+This is a testing script for ui_com. It establishes
 a specified amount of connections to the server and sends
 two byte strings per connection. Test information gets printed
 to the terminal.
@@ -9,9 +9,14 @@ import socket
 import selectors
 import types
 
+# Where to connect to.
 HOST = 'localhost'
 PORT = 65432
+
+# Selector for handling multiple connections.
 sel = selectors.DefaultSelector()
+
+# The byte messages that will be sent.
 m1 = b''
 m2 = b''
 for i in range(0,250):
@@ -64,8 +69,10 @@ def service_connection(key, mask):
             data.outb = data.outb[sent:]
 
 
+# Asks for the amount of connections to initiate before starting them.
 start_connections(HOST, PORT, int(input('Input number of connections: ')))
 
+# The test loop.
 try:
     while True:
         events = sel.select(timeout=1)
