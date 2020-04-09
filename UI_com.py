@@ -38,9 +38,8 @@ class Connection:
 
     def accept_wrapper(self):
         """
-        Accepts an incoming connection. Should only be called when the instance's
-        listening socket is selected by the instance's selector.
-        Returns the newly created connection socket and its address.
+        Accepts an incoming connection. Should only be called when the
+        instance's listening socket is selected by the instance's selector.
         """
         conn, addr = self.lsock.accept()
         conn.setblocking(False)
