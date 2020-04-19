@@ -25,16 +25,16 @@ serial_timeout = config['radio']['serial_timeout']
 
 
 class Sat2rf1():
-    '''
+    """
     Class for interfacing with the Sat2rf1 radio.
-    '''
+    """
     def __init__(self):
         self.kiss = Kiss(port=port, baudrate=baudrate, timeout=serial_timeout)
 
     def set_frequency(self, freq):
-        '''
+        """
         Sets frequency of the radio in Hertz.
-        '''
+        """
         if freq < LOWER_FREQUENCY_LIMIT:
             raise RadioError("Frequency too low. Must be larger than " + str(int(LOWER_FREQUENCY_LIMIT/1e6)) + " MHz")
         elif freq > UPPER_FREQUENCY_LIMIT:
@@ -109,16 +109,16 @@ class Sat2rf1():
         self.set_radio_mode(mode=TRANSPARENT_RECEIVE_MODE)
 
     def set_continous_transmit_mode(self):
-        '''
+        """
         For debugging. Emits a constant carrier wave with no data.
-        '''
+        """
         logging.info("Setting radio to continous transmit mode.")
         self.set_radio_mode(mode=CONTINOUS_TRANSMIT_MODE)
 
     def get_radio_mode(self):
-        '''
+        """
         Returns current radio mode.
-        '''
+        """
         try:
             #response = self.kiss.write_setting(setting=GET_MODE, value=b'00000000')
             self.kiss.create_frame(setting=GET_MODE, value=b'00000000')
