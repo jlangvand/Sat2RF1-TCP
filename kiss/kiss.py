@@ -96,6 +96,10 @@ class Kiss:
         for frame in self.write_queue:
             self.interface.write(frame)
 
+    def write_and_return_response(self, frame):
+        self.interface.write(frame)
+        return self.interface.readline()
+
     # TODO: Rough scetch. Make this cleaner
     def main_loop(self):
 
