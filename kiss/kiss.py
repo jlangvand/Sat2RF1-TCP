@@ -37,6 +37,7 @@ class Kiss:
         # TODO: Remove this interface and write to queue instead
         # self.interface.write(frame)
         self.write_queue.append(frame)
+        return frame
 
         # TODO: Don't read from radio here. This only expects one frame.
         # Read response from radio

@@ -43,8 +43,7 @@ class Sat2rf1():
         try:
             freq_in_bytes = int(freq).to_bytes(length=4, byteorder='big') # freq must be int
             #response = self.kiss.write_setting(setting=SET_FREQUENCY, value=freq_in_bytes)
-            self.kiss.create_frame(setting=SET_FREQUENCY, value=freq_in_bytes)
-            response = self.kiss.write_queue[len(self.kiss.write_queue)-1] # TODO: wont work as it is now, see create_frame in KISS
+            response = self.kiss.create_frame(setting=SET_FREQUENCY, value=freq_in_bytes)
             # (above) assumes the last element in write_queue is what was appended with the line above this one
             response = int.from_bytes(response, 'big')
 
@@ -63,8 +62,7 @@ class Sat2rf1():
         """
         try:
             #response = self.kiss.write_setting(setting=GET_FREQUENCY, value=b'00000000')
-            self.kiss.create_frame(setting=GET_FREQUENCY, value=b'00000000')
-            response = self.kiss.write_queue[len(self.kiss.write_queue)-1] # TODO: wont work, see create_frame in KISS
+            response = self.kiss.create_frame(setting=GET_FREQUENCY, value=b'00000000')
             # (above) assumes the last element in write_queue is what was appended with the line above this one
             freq = int.from_bytes(response, 'big')
             logging.info("Frequency is " + str(int(freq/1e6)) + " MHz")
@@ -81,8 +79,7 @@ class Sat2rf1():
         """
         try:
             #response = self.kiss.write_setting(setting=SET_MODE, value=mode)
-            self.kiss.create_frame(setting=SET_MODE, value=mode)
-            response = self.kiss.write_queue[len(self.kiss.write_queue)-1] # TODO: wont work, see create_frame in KISS
+            response = self.kiss.create_frame(setting=SET_MODE, value=mode)
             # (above) assumes the last element in write_queue is what was appended with the line above this one
             response = int.from_bytes(response, 'big')
             if response != 0:
@@ -121,8 +118,7 @@ class Sat2rf1():
         """
         try:
             #response = self.kiss.write_setting(setting=GET_MODE, value=b'00000000')
-            self.kiss.create_frame(setting=GET_MODE, value=b'00000000')
-            response = self.kiss.write_queue[len(self.kiss.write_queue)-1] # TODO: wont work, see create_frame in KISS
+            response = self.kiss.create_frame(setting=GET_MODE, value=b'00000000')
             # (above) assumes the last element in write_queue is what was appended with the line above this one
 
             if response == PACKET_RECEIVE_MODE:
@@ -145,8 +141,7 @@ class Sat2rf1():
         """
         try:
             #response = self.kiss.write_setting(setting=DATA, value=data)
-            self.kiss.create_frame(setting=DATA_FRAME, value=data)
-            response = self.kiss.write_queue[len(self.kiss.write_queue)-1] # TODO: wont work, see create_frame in KISS 
+            response = self.kiss.create_frame(setting=DATA_FRAME, value=data)
             # (above) assumes the last element in write_queue is what was appended with the line above this one
             response = int.from_bytes(response, 'big')
             if response != 0:
