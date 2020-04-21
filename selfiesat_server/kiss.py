@@ -1,8 +1,8 @@
 import serial
 import logging
 
-from .constants import SERIAL_TIMEOUT, FEND
-from .utils import escape_special_codes, recover_special_codes
+from selfiesat_server.kiss_constants import *
+from selfiesat_server.utils import escape_special_codes, recover_special_codes
 
 
 class Kiss:
@@ -10,8 +10,8 @@ class Kiss:
     Defines new KISS interface.
     """
 
-    def __init__(self, port, baudrate, timeout):
-        self.interface = serial.Serial(port=port, baudrate=baudrate, timeout=timeout)
+    def __init__(self, port, baud, timeout):
+        self.interface = serial.Serial(port=port, baudrate=baud, timeout=timeout)
         logging.info('Connected to radio')
 
         # TODO: Add some kind of queue for read and write here

@@ -1,6 +1,6 @@
 """
 This contains the Connection class which can be used to
-provide server functionality to a script or a program.
+provide selfiesat_server functionality to a script or a program.
 """
 
 import selectors
@@ -8,7 +8,7 @@ import socket
 import types
 
 # Defines logging format.
-from server import logger
+from selfiesat_server import logger
 
 
 class Connection:
@@ -94,8 +94,8 @@ class Connection:
 
     def server_cycle(self, timeout=0):
         """
-        Runs the "server" for exactly one cycle. Beware that this call will
-        not return if no server events occur and timeout is not set.
+        Runs the "selfiesat_server" for exactly one cycle. Beware that this call will
+        not return if no selfiesat_server events occur and timeout is not set.
         """
         try:
             events = self.sel.select(timeout=timeout)  # Blocks.

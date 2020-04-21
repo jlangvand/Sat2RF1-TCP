@@ -1,4 +1,4 @@
-from .constants import FESC, FESC_TFEND, TFEND, FESC_TFESC, FEND, DATA_FRAME
+from .kiss_constants import FESC, FESC_TFEND, TFEND, FESC_TFESC, FEND, DATA_FRAME
 
 def escape_special_codes(raw_codes):
     """

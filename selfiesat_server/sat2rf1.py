@@ -1,35 +1,24 @@
-import yaml
-import logging, sys
-import threading
-import numpy as np
+from selfiesat_server import logger, config
+from .kiss import Kiss
 
-from sat2rf1.kiss import Kiss
-
-from .constants import *
-
-# Import config
-with open("./config.yaml", 'r') as stream:
-    try:
-        config = yaml.safe_load(stream)
-    except yaml.YAMLError as exc:
-        logging.warning('Error in configuration file: %s', exc)
-
-# Set the logging
-logFormatter = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(format=logFormatter, level=logging.DEBUG, handlers=[logging.StreamHandler(sys.stdout)])
+from .sat2rf1_constants import *
 
 # Define parameters for serial communication
-baudrate = config['radio']['baudrate']
+baud = config['radio']['baud']
 port = config['radio']['port']
 serial_timeout = config['radio']['serial_timeout']
 
 
-class Sat2rf1():
+class Sat2rf1:
     """
     Class for interfacing with the Sat2rf1 radio.
     """
     def __init__(self):
-        self.kiss = Kiss(port=port, baudrate=baudrate, timeout=serial_timeout)
+        try:
+            self.kiss = Kiss(port=port, baud=baud, timeout=serial_timeout)
+        except FileNotFoundError as e:
+            logger.error('Could not find radio! Make sure it is connected.')
+            raise RadioError('Radio might not be connected: ' + e)
 
     def set_frequency(self, freq):
         """
@@ -50,7 +39,7 @@ class Sat2rf1():
                 raise RadioError("Could not set frequency! Error code " + str(response))
 
             else:
-                logging.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
+                logger.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
 
         except RadioError as e:
             logging.error(e)
@@ -63,10 +52,10 @@ class Sat2rf1():
             #response = self.kiss.write_setting(setting=GET_FREQUENCY, value=b'00000000')
             response = self.kiss.create_frame(setting=GET_FREQUENCY, value=b'00000000')
             freq = int.from_bytes(response, 'big')
-            logging.info("Frequency is " + str(int(freq/1e6)) + " MHz")
+            logger.info("Frequency is " + str(int(freq/1e6)) + " MHz")
             return freq
         except Exception as e:
-            logging.error("Could not get frequency from radio. "+ str(e))
+            logger.error("Could not get frequency from radio. "+ str(e))
 
     def send_string(self, data):
         pass
@@ -82,14 +71,14 @@ class Sat2rf1():
             if response != 0:
                 raise RadioError("Could not set transmitter mode.")
         except RadioError as e:
-            logging.error(e)
+            logger.error(e)
 
     def set_packet_receive_mode(self):
         """
         The packet is detected when the specific carrier signal
         to noise ratio is exceeded (15 dB above noise in case of AX.25 packets)
         """
-        logging.info("Setting radio to packet receive mode.")
+        logger.info("Setting radio to packet receive mode.")
         self.set_radio_mode(mode=PACKET_RECEIVE_MODE)
 
     def set_transparent_receive_mode(self):
@@ -99,14 +88,14 @@ class Sat2rf1():
         sensitive compared to the transparent mode, however
         it is more susceptible to the interference cause by the noisy signals
         """
-        logging.info("Setting radio to transparent mode.")
+        logger.info("Setting radio to transparent mode.")
         self.set_radio_mode(mode=TRANSPARENT_RECEIVE_MODE)
 
     def set_continous_transmit_mode(self):
         """
         For debugging. Emits a constant carrier wave with no data.
         """
-        logging.info("Setting radio to continous transmit mode.")
+        logger.info("Setting radio to continous transmit mode.")
         self.set_radio_mode(mode=CONTINOUS_TRANSMIT_MODE)
 
     def get_radio_mode(self):
@@ -118,17 +107,17 @@ class Sat2rf1():
             response = self.kiss.create_frame(setting=GET_MODE, value=b'00000000')
 
             if response == PACKET_RECEIVE_MODE:
-                logging.info("Radio is in packet receive mode.")
+                logger.info("Radio is in packet receive mode.")
             elif response == TRANSPARENT_RECEIVE_MODE:
-                logging.info("Radio is in transparent receive mode.")
+                logger.info("Radio is in transparent receive mode.")
             elif response == CONTINOUS_TRANSMIT_MODE:
-                logging.info("Radio is in continous transmit mode.")
+                logger.info("Radio is in continous transmit mode.")
             elif response == TRANSMIT_IN_PROGRESS:
-                logging.info("Radio is in transmit in progress mode.")
+                logger.info("Radio is in transmit in progress mode.")
 
             return response
         except Exception as e:
-            logging.error("Could not get radio mode. "+ str(e))
+            logger.error("Could not get radio mode. "+ str(e))
 
     # TODO: Rough scetch. Test this. Data transmission uses DATA setting from KISS.
     def transmit_data(self, data):
@@ -142,7 +131,7 @@ class Sat2rf1():
             if response != 0:
                 raise RadioError("Could not set transmitter mode.")
         except RadioError as e:
-            logging.error(e)
+            logger.error(e)
 
     # TODO: Get data from KISS interface. Then send data to socket or validate command.
     def read_data_from_interface(self):
@@ -162,7 +151,7 @@ class Sat2rf1():
                 raise RadioError("Could not set frequency! Error code " + str(response))
 
             else:
-                logging.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
+                logger.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
                 # TODO: Perhaps update some frquency variable so it is easy to access?
                 self.carrier_frequency = freq
 

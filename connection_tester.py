@@ -1,6 +1,6 @@
 """
 This is a testing script for ui_com. It establishes
-a specified amount of connections to the server and sends
+a specified amount of connections to the selfiesat_server and sends
 two byte strings per connection. Test information gets printed
 to the terminal.
 """
@@ -27,7 +27,7 @@ MESSAGES = [m1, m2]
 
 def start_connections(host, port, num_conns):
     """
-    Establishes connections to the server.
+    Establishes connections to the selfiesat_server.
     """
     server_addr = (host, port)
     for i in range(0, num_conns):
