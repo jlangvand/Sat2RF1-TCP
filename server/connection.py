@@ -5,14 +5,10 @@ provide server functionality to a script or a program.
 
 import selectors
 import socket
-import logging
 import types
 
 # Defines logging format.
-logging.basicConfig(filename='dump.log',
-                    format='%(asctime)s | %(levelname)s | %(message)s',
-                    level=logging.INFO)
-
+from server import logger
 
 class Connection:
     """
@@ -34,7 +30,9 @@ class Connection:
         self.lsock.listen()
         self.sel.register(self.lsock, selectors.EVENT_READ)
         # Logs.
-        logging.info('Listening on %s:%s.', host, port)
+        if settings_con: type = "settings"
+        else: type = "data"
+        logger.info('Listening for %s on %s:%s.', type, host, port)
 
     def accept_wrapper(self):
         """
@@ -45,7 +43,7 @@ class Connection:
         conn.setblocking(False)
         self.sel.register(conn, selectors.EVENT_READ | selectors.EVENT_WRITE,
                           data=types.SimpleNamespace(addr=addr, inb=b'', outb=b''))
-        logging.info('Accepted connection from %s:%s.', addr[0], addr[1])
+        logger.info('Accepted connection from %s:%s.', addr[0], addr[1])
 
     def service_connection(self, key, mask):
         """
@@ -63,7 +61,7 @@ class Connection:
                 if temp_data:
                     recv_data += temp_data
                 else:
-                    logging.warning('Connection to %s:%s was closed from client side.',
+                    logger.warning('Connection to %s:%s was closed from client side.',
                                     data.addr[0], data.addr[1])
                     self.sel.unregister(sock)
                     sock.close()
@@ -74,18 +72,18 @@ class Connection:
                     if temp_data:
                         recv_data += temp_data
                     else:
-                        logging.warning('Connection to %s:%s was closed from client side.',
+                        logger.warning('Connection to %s:%s was closed from client side.',
                                         data.addr[0], data.addr[1])
                         self.sel.unregister(sock)
                         sock.close()
                         break
             if recv_data:
-                logging.debug('Data received from %s:%s: %s',
+                logger.debug('Data received from %s:%s: %s',
                               data.addr[0], data.addr[1], repr(recv_data))
                 self._received.append(recv_data, data.outb)
         if mask & selectors.EVENT_WRITE:
             if data.outb:
-                logging.debug('Sending data to %s:%s: %s',
+                logger.debug('Sending data to %s:%s: %s',
                               data.addr[0], data.addr[1], repr(data.outb))
                 sent = sock.send(data.outb)
                 data.outb = data.outb[sent:]
@@ -104,9 +102,9 @@ class Connection:
                     else:
                         self.service_connection(key, mask)
                 except OSError:
-                    logging.exception('A socket error was caught:\n')
+                    logger.exception('A socket error was caught:\n')
         except:
-            logging.critical('An unexpected error occured:\n', exc_info=True)
+            logger.critical('An unexpected error occured:\n', exc_info=True)
 
     @staticmethod
     def send(message, data_pointer):
