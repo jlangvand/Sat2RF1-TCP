@@ -24,12 +24,32 @@ port = config['radio']['port']
 serial_timeout = config['radio']['serial_timeout']
 
 
+def build_settings_command(setting, value):
+    return b''.join([
+        Kiss.FEND,
+        setting,
+        value,
+        Kiss.FEND
+    ])
+
+
 class Sat2rf1():
     """
     Class for interfacing with the Sat2rf1 radio.
     """
     def __init__(self):
         self.kiss = Kiss(port=port, baudrate=baudrate, timeout=serial_timeout)
+
+    def set_freq(self, freq):
+        freq_in_bytes = int(freq).to_bytes(length=4, byteorder='big')  # freq must be int
+        frame = build_settings_command(SET_FREQUENCY, freq_in_bytes)
+        if len(self.kiss.write_queue) > 0:
+            logging.warning("Interface busy, " + len(self.kiss.write_queue) + "packets in line")
+            while len(self.kiss.write_queue) > 0:
+                pass
+        logging.info("Seting frequency to " + str(int(freq/1e6)) + " MHz.")
+        response = self.kiss.write_and_return_response(frame)
+        # ...
 
     def set_frequency(self, freq):
         """

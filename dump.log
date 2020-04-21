@@ -26,3 +26,5 @@
 2020-03-29 21:41:08,041 INFO Keyboard interrupt caught.
 2020-03-29 21:41:08,041 INFO Shutting down server side.
 
+2020-04-21 12:01:35,741 | INFO | Listening on localhost:20201.
+2020-04-21 12:01:35,741 | INFO | Listening on localhost:20202.
