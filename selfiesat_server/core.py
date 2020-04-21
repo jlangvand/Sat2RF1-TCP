@@ -31,6 +31,15 @@ def main():
         data_socket.server_cycle(0.5)
 
         # TODO: check for data/settings and do stuff
+        tcp_data = data_socket.receive()
+        if tcp_data is not None:
+            None
+            # TODO: Add pointer to stack, send message to radio as data
+
+        tcp_settings = settings_socket.receive()
+        if tcp_settings is not None:
+            None
+            # TODO: Add pointer to stack, do stuff with command
 
         # TODO: check for incoming data from radio, do stuff
 
