@@ -33,10 +33,10 @@ class Connection:
         self.sel.register(self.lsock, selectors.EVENT_READ)
         # Logs.
         if settings_con:
-            type = "settings"
+            socket_type = "settings"
         else:
-            type = "data"
-        logger.info('Listening for %s on %s:%s.', type, host, port)
+            socket_type = "data"
+        logger.info('Listening for %s on %s:%s.', socket_type, host, port)
 
     def accept_wrapper(self):
         """
@@ -108,7 +108,7 @@ class Connection:
                 except OSError:
                     logger.exception('A socket error was caught:\n')
         except:
-            logger.critical('An unexpected error occured:\n', exc_info=True)
+            logger.critical('An unexpected error occurred:\n', exc_info=True)
 
     @staticmethod
     def send(message, data_pointer):
