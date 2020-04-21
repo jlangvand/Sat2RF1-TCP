@@ -16,6 +16,8 @@ def main():
     settings_socket = connection.Connection(hostname, settings_port, True)
     data_socket = connection.Connection(hostname, data_port)
 
+    data_pointer = None
+
     logger.info("Setting up radio...")
     try:
         radio = Sat2rf1()
@@ -30,18 +32,30 @@ def main():
         settings_socket.server_cycle(0.5)
         data_socket.server_cycle(0.5)
 
-        # TODO: check for data/settings and do stuff
+        # Check for data/settings and do stuff
         tcp_data = data_socket.receive()
         if tcp_data is not None:
-            None
-            # TODO: Add pointer to stack, send message to radio as data
+            logger.info("Got a TCP packet")
+            logger.info("Message: %s", tcp_data[1])
+            data_pointer = tcp_data[0]
 
         tcp_settings = settings_socket.receive()
         if tcp_settings is not None:
-            None
+            pass
             # TODO: Add pointer to stack, do stuff with command
 
-        # TODO: check for incoming data from radio, do stuff
+        # Assuming read_data_from_interface() returns a tuple where
+        # radio_data[0] contains command byte (ignored for now),
+        # radio_data[1] contains message
+        radio_data = radio.read_data_from_interface()
+        if radio_data is not None:
+            if data_pointer is not None:
+                logger.info("Got data from radio, sending to client")
+                data_socket.send(radio_data[1], data_pointer)
+            else:
+                logger.warning("Data received from radio but no client connected!")
+                logger.info("Dumping incoming data to %s...")
+                # TODO: Dump message to file
 
 
 if __name__ == '__main__':
