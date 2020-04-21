@@ -5,5 +5,14 @@ socket:
 
 radio:
   baud: 115200
-  port: '/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0'
+  port: /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
   serial_timeout: 0.1 # seconds
+
+debug:
+  fake_radio_connection: true
+
+logging:
+  log_to_console: true
+  console_format: %(levelname)s %(message)s
+  file_format: %(asctime)s | %(levelname)s | %(message)s
+  file_path: log
