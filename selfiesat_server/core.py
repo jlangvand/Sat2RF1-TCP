@@ -31,7 +31,8 @@ def main():
     except SerialException as e:
         logger.error('Failed to connect to radio:')
         logger.error(e.strerror)
-        if not config['debug']['fake_radio_connection']: sys.exit(1)
+        if not config['debug']['fake_radio_connection']:
+            sys.exit(1)
 
     while True:
         # Update sockets, allows them to receive data.
