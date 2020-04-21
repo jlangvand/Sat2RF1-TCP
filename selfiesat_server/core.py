@@ -8,6 +8,12 @@ from selfiesat_server.utils import dump_packet
 
 
 def main():
+    """
+    Sets ut TCP connections for setting and getting radio configuration and tranceieving data.
+
+    In it's current state, only the data socket is functional, and only one client can be connected.
+    :return:
+    """
     logger.info("Setting up sockets...")
 
     hostname = config['socket']['hostname']
