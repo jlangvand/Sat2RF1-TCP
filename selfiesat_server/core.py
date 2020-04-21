@@ -1,3 +1,5 @@
+import sys
+
 from serial import SerialException
 
 from selfiesat_server import connection, HOSTNAME, SETTINGS_PORT, DATA_PORT, logger, config
@@ -19,6 +21,7 @@ def main():
     except SerialException as e:
         logger.error('Failed to connect to radio:')
         logger.error(e.strerror)
+        if not config['debug']['fake_radio_connection']: sys.exit(1)
 
 
 if __name__ == '__main__':
