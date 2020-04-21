@@ -10,11 +10,13 @@ import types
 # Defines logging format.
 from server import logger
 
+
 class Connection:
     """
     A serverlike class that listens on a specific network address and may
     accept and serve an arbitrary amount of connection attempts.
     """
+
     def __init__(self, host='localhost', port=65432, settings_con=False):
         # Defines variables.
         self._host = host
@@ -30,8 +32,10 @@ class Connection:
         self.lsock.listen()
         self.sel.register(self.lsock, selectors.EVENT_READ)
         # Logs.
-        if settings_con: type = "settings"
-        else: type = "data"
+        if settings_con:
+            type = "settings"
+        else:
+            type = "data"
         logger.info('Listening for %s on %s:%s.', type, host, port)
 
     def accept_wrapper(self):
@@ -62,7 +66,7 @@ class Connection:
                     recv_data += temp_data
                 else:
                     logger.warning('Connection to %s:%s was closed from client side.',
-                                    data.addr[0], data.addr[1])
+                                   data.addr[0], data.addr[1])
                     self.sel.unregister(sock)
                     sock.close()
             else:
@@ -73,18 +77,18 @@ class Connection:
                         recv_data += temp_data
                     else:
                         logger.warning('Connection to %s:%s was closed from client side.',
-                                        data.addr[0], data.addr[1])
+                                       data.addr[0], data.addr[1])
                         self.sel.unregister(sock)
                         sock.close()
                         break
             if recv_data:
                 logger.debug('Data received from %s:%s: %s',
-                              data.addr[0], data.addr[1], repr(recv_data))
+                             data.addr[0], data.addr[1], repr(recv_data))
                 self._received.append(recv_data, data.outb)
         if mask & selectors.EVENT_WRITE:
             if data.outb:
                 logger.debug('Sending data to %s:%s: %s',
-                              data.addr[0], data.addr[1], repr(data.outb))
+                             data.addr[0], data.addr[1], repr(data.outb))
                 sent = sock.send(data.outb)
                 data.outb = data.outb[sent:]
 
@@ -94,7 +98,7 @@ class Connection:
         not return if no server events occur and timeout is not set.
         """
         try:
-            events = self.sel.select(timeout=timeout) # Blocks.
+            events = self.sel.select(timeout=timeout)  # Blocks.
             for key, mask in events:
                 try:
                     if key.data is None:
