@@ -2,7 +2,7 @@ import sys
 
 from serial import SerialException
 
-from selfiesat_server import connection, HOSTNAME, SETTINGS_PORT, DATA_PORT, logger, config
+from selfiesat_server import connection, logger, config
 from selfiesat_server.sat2rf1 import Sat2rf1
 from selfiesat_server.utils import dump_packet
 
