@@ -127,19 +127,40 @@ class Sat2rf1:
         try:
             #response = self.kiss.write_setting(setting=DATA, value=data)
             response = self.kiss.create_frame(setting=DATA_FRAME, value=data)
-            response = int.from_bytes(response, 'big')
-            if response != 0:
-                raise RadioError("Could not set transmitter mode.")
+
+            # TODO: Implement respons error check
+
+            #response = int.from_bytes(response, 'big')
+            #if response != 0:
+            #    raise RadioError("Could not set transmitter mode.")
         except RadioError as e:
             logger.error(e)
 
     # TODO: Get data from KISS interface. Then send data to socket or validate command.
     def read_data_from_interface(self):
-        for data in self.kiss.decoded_frames:
-            if data.command == DATA_FRAME:
-                pass # send data to socket or some other interface
-            else:
-                self.validate_command(data)
+        """
+        Description.
+        """
+        data = self.kiss.decoded_frames.pop(0)
+
+        com_dat = tuple()
+        command = data[0:1]
+        data = data[1:len(data)]
+
+        com_dat += (command,data)
+
+        return com_dat
+            
+            # TODO: Might be implemented differently in the future
+            #for data in self.kiss.decoded_frames:
+            #if command == DATA_FRAME:
+            #    pass # send data to socket or some other interface
+
+           
+            #else:
+
+                 # TODO: Implement validation of commands
+                 # self.validate_command(data)
 
 
     # TODO: Validate all commands written to the radio. Each command sends a error code back. Check these or throw an exception.
