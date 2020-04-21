@@ -124,17 +124,19 @@ class Sat2rf1:
         """
         Pass data to the radio for transmission
         """
-        try:
+        self.kiss.create_frame(setting=DATA_FRAME, value=data)
+        
+        #try:
             #response = self.kiss.write_setting(setting=DATA, value=data)
-            response = self.kiss.create_frame(setting=DATA_FRAME, value=data)
+            #response = self.kiss.create_frame(setting=DATA_FRAME, value=data)
 
             # TODO: Implement respons error check
 
             #response = int.from_bytes(response, 'big')
             #if response != 0:
             #    raise RadioError("Could not set transmitter mode.")
-        except RadioError as e:
-            logger.error(e)
+        #except RadioError as e:
+        #    logger.error(e)
 
     # TODO: Get data from KISS interface. Then send data to socket or validate command.
     def read_data_from_interface(self):
