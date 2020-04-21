@@ -14,5 +14,5 @@ debug:
 logging:
   log_to_console: true
   console_format: %(levelname)s %(message)s
-  file_format: %(asctime)s | %(levelname)s | %(message)s
+  file_format: %(asctime)s %(levelname)s %(message)s
   file_path: log
