@@ -42,7 +42,7 @@ class Sat2rf1:
                 logger.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
 
         except RadioError as e:
-            logging.error(e)
+            logger.error(e)
 
     def get_frequency(self):
         """
@@ -135,7 +135,7 @@ class Sat2rf1:
 
     # TODO: Get data from KISS interface. Then send data to socket or validate command.
     def read_data_from_interface(self):
-        for data in self.kiss.get_decoded_frames():
+        for data in self.kiss.decoded_frames:
             if data.command == DATA_FRAME:
                 pass # send data to socket or some other interface
             else:
