@@ -4,6 +4,7 @@ from serial import SerialException
 
 from selfiesat_server import connection, HOSTNAME, SETTINGS_PORT, DATA_PORT, logger, config
 from selfiesat_server.sat2rf1 import Sat2rf1
+from selfiesat_server.utils import dump_packet
 
 
 def main():
@@ -54,8 +55,8 @@ def main():
                 data_socket.send(radio_data[1], data_pointer)
             else:
                 logger.warning("Data received from radio but no client connected!")
-                logger.info("Dumping incoming data to %s...")
-                # TODO: Dump message to file
+                logger.info("Dumping incoming data...")
+                dump_packet(radio_data)
 
 
 if __name__ == '__main__':

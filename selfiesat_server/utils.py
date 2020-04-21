@@ -1,4 +1,6 @@
+from datetime import time
 from .kiss_constants import FESC, FESC_TFEND, TFEND, FESC_TFESC, FEND, DATA_FRAME
+
 
 def escape_special_codes(raw_codes):
     """
@@ -61,3 +63,10 @@ def strip_df_start(frame):
     :rtype: str
     """
     return frame.lstrip(DATA_FRAME).strip()
+
+
+def dump_packet(data):
+    filename = '{}.bin'.format(time())
+    f = open(filename, 'wb')
+    f.write(bytes(data))
+    f.close()
