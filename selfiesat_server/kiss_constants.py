@@ -22,6 +22,5 @@ FESC_TFEND = b''.join([FESC, TFEND])
 # 0xDB is sent as 0xDB 0xDD
 FESC_TFESC = b''.join([FESC, TFESC])
 
-
-UI_PROTOCOL_ID = b'\xF0' # TODO: Not sure if we need this anymore
-SLOT_TIME = b'\x00' # TODO: Not sure what this should do yet
+UI_PROTOCOL_ID = b'\xF0'  # TODO: Not sure if we need this anymore
+SLOT_TIME = b'\x00'  # TODO: Not sure what this should do yet

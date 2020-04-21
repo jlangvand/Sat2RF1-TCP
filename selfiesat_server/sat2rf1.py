@@ -13,6 +13,7 @@ class Sat2rf1:
     """
     Class for interfacing with the Sat2rf1 radio.
     """
+
     def __init__(self):
         try:
             self.kiss = Kiss(port=port, baud=baud, timeout=serial_timeout)
@@ -25,13 +26,14 @@ class Sat2rf1:
         Sets frequency of the radio in Hertz.
         """
         if freq < LOWER_FREQUENCY_LIMIT:
-            raise RadioError("Frequency too low. Must be larger than " + str(int(LOWER_FREQUENCY_LIMIT/1e6)) + " MHz")
+            raise RadioError("Frequency too low. Must be larger than " + str(int(LOWER_FREQUENCY_LIMIT / 1e6)) + " MHz")
         elif freq > UPPER_FREQUENCY_LIMIT:
-            raise RadioError("Frequency too large. Must be smaller than " + str(int(UPPER_FREQUENCY_LIMIT/1e6)) + " MHz")
+            raise RadioError(
+                "Frequency too large. Must be smaller than " + str(int(UPPER_FREQUENCY_LIMIT / 1e6)) + " MHz")
 
         try:
-            freq_in_bytes = int(freq).to_bytes(length=4, byteorder='big') # freq must be int
-            #response = self.kiss.write_setting(setting=SET_FREQUENCY, value=freq_in_bytes)
+            freq_in_bytes = int(freq).to_bytes(length=4, byteorder='big')  # freq must be int
+            # response = self.kiss.write_setting(setting=SET_FREQUENCY, value=freq_in_bytes)
             response = self.kiss.create_frame(setting=SET_FREQUENCY, value=freq_in_bytes)
             response = int.from_bytes(response, 'big')
 
@@ -39,7 +41,7 @@ class Sat2rf1:
                 raise RadioError("Could not set frequency! Error code " + str(response))
 
             else:
-                logger.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
+                logger.info('Set frequency to ' + str(int(freq / 1e6)) + ' MHz.')
 
         except RadioError as e:
             logger.error(e)
@@ -49,13 +51,13 @@ class Sat2rf1:
         Returns current carrier frequency.
         """
         try:
-            #response = self.kiss.write_setting(setting=GET_FREQUENCY, value=b'00000000')
+            # response = self.kiss.write_setting(setting=GET_FREQUENCY, value=b'00000000')
             response = self.kiss.create_frame(setting=GET_FREQUENCY, value=b'00000000')
             freq = int.from_bytes(response, 'big')
-            logger.info("Frequency is " + str(int(freq/1e6)) + " MHz")
+            logger.info("Frequency is " + str(int(freq / 1e6)) + " MHz")
             return freq
         except Exception as e:
-            logger.error("Could not get frequency from radio. "+ str(e))
+            logger.error("Could not get frequency from radio. " + str(e))
 
     def send_string(self, data):
         pass
@@ -65,7 +67,7 @@ class Sat2rf1:
         Sets a transmitter mode
         """
         try:
-            #response = self.kiss.write_setting(setting=SET_MODE, value=mode)
+            # response = self.kiss.write_setting(setting=SET_MODE, value=mode)
             response = self.kiss.create_frame(setting=SET_MODE, value=mode)
             response = int.from_bytes(response, 'big')
             if response != 0:
@@ -103,7 +105,7 @@ class Sat2rf1:
         Returns current radio mode.
         """
         try:
-            #response = self.kiss.write_setting(setting=GET_MODE, value=b'00000000')
+            # response = self.kiss.write_setting(setting=GET_MODE, value=b'00000000')
             response = self.kiss.create_frame(setting=GET_MODE, value=b'00000000')
 
             if response == PACKET_RECEIVE_MODE:
@@ -117,7 +119,7 @@ class Sat2rf1:
 
             return response
         except Exception as e:
-            logger.error("Could not get radio mode. "+ str(e))
+            logger.error("Could not get radio mode. " + str(e))
 
     # TODO: Rough scetch. Test this. Data transmission uses DATA setting from KISS.
     def transmit_data(self, data):
@@ -125,17 +127,17 @@ class Sat2rf1:
         Pass data to the radio for transmission
         """
         self.kiss.create_frame(setting=DATA_FRAME, value=data)
-        
-        #try:
-            #response = self.kiss.write_setting(setting=DATA, value=data)
-            #response = self.kiss.create_frame(setting=DATA_FRAME, value=data)
 
-            # TODO: Implement respons error check
+        # try:
+        # response = self.kiss.write_setting(setting=DATA, value=data)
+        # response = self.kiss.create_frame(setting=DATA_FRAME, value=data)
 
-            #response = int.from_bytes(response, 'big')
-            #if response != 0:
-            #    raise RadioError("Could not set transmitter mode.")
-        #except RadioError as e:
+        # TODO: Implement respons error check
+
+        # response = int.from_bytes(response, 'big')
+        # if response != 0:
+        #    raise RadioError("Could not set transmitter mode.")
+        # except RadioError as e:
         #    logger.error(e)
 
     # TODO: Get data from KISS interface. Then send data to socket or validate command.
@@ -149,21 +151,19 @@ class Sat2rf1:
         command = data[0:1]
         data = data[1:len(data)]
 
-        com_dat += (command,data)
+        com_dat += (command, data)
 
         return com_dat
-            
-            # TODO: Might be implemented differently in the future
-            #for data in self.kiss.decoded_frames:
-            #if command == DATA_FRAME:
-            #    pass # send data to socket or some other interface
 
-           
-            #else:
+        # TODO: Might be implemented differently in the future
+        # for data in self.kiss.decoded_frames:
+        # if command == DATA_FRAME:
+        #    pass # send data to socket or some other interface
 
-                 # TODO: Implement validation of commands
-                 # self.validate_command(data)
+        # else:
 
+        # TODO: Implement validation of commands
+        # self.validate_command(data)
 
     # TODO: Validate all commands written to the radio. Each command sends a error code back. Check these or throw an exception.
     # This means that all the other functions need thir response validation moved down here.
@@ -174,9 +174,10 @@ class Sat2rf1:
                 raise RadioError("Could not set frequency! Error code " + str(response))
 
             else:
-                logger.info('Set frequency to ' + str(int(freq/1e6)) + ' MHz.')
+                logger.info('Set frequency to ' + str(int(freq / 1e6)) + ' MHz.')
                 # TODO: Perhaps update some frquency variable so it is easy to access?
                 self.carrier_frequency = freq
+
 
 class RadioError(Exception):
     """Radio Error."""

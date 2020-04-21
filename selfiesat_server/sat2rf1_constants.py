@@ -20,8 +20,8 @@ GET_MODE = b'\x30'
 """
 Carrier frequency limits
 """
-LOWER_FREQUENCY_LIMIT = 430e6 # Hertz
-UPPER_FREQUENCY_LIMIT = 440e6 # Hertz
+LOWER_FREQUENCY_LIMIT = 430e6  # Hertz
+UPPER_FREQUENCY_LIMIT = 440e6  # Hertz
 
 """
 Transmitter operational modes

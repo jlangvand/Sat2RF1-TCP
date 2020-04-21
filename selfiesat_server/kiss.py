@@ -84,7 +84,8 @@ class Kiss:
                         logging.info("Found an incomplete frame at end of response, adding this to buffer")
                         read_buffer += split_data[fends - 1]
 
-                for ii in range(len(frames)): # Iterates trough the data in frames, recovers the special codes and appends the data to the decoded_frame list
+                for ii in range(len(
+                        frames)):  # Iterates trough the data in frames, recovers the special codes and appends the data to the decoded_frame list
                     logging.info("Decoding and assembling frames")
                     self.decoded_frames.append(recover_special_codes(frames[ii]))
 

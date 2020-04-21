@@ -19,7 +19,7 @@ sel = selectors.DefaultSelector()
 # The byte messages that will be sent.
 m1 = b''
 m2 = b''
-for i in range(0,250):
+for i in range(0, 250):
     m1 += b'a'
     m2 += b'b'
 MESSAGES = [m1, m2]
