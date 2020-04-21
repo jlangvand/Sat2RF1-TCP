@@ -4,14 +4,6 @@ import sys
 import yaml
 
 """
-TCP
-"""
-
-SETTINGS_PORT = 20201
-DATA_PORT = 20202
-HOSTNAME = "localhost"
-
-"""
 Config
 """
 
