@@ -11,9 +11,10 @@ def main():
 
     hostname = config['socket']['hostname']
     settings_port = config['socket']['settings_port']
+    data_port = config['socket']['data_port']
 
     settings_socket = connection.Connection(hostname, settings_port, True)
-    data_port = connection.Connection(HOSTNAME, DATA_PORT)
+    data_socket = connection.Connection(hostname, data_port)
 
     logger.info("Setting up radio...")
     try:
