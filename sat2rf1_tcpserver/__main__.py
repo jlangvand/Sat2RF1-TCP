@@ -1,4 +1,7 @@
-#  [description here]
+"""
+Entry point for module sat2rf1_tcpserver
+"""
+
 #  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
@@ -21,26 +24,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
 
-import setuptools
+from sat2rf1_tcpserver.core import main
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
-
-setuptools.setup(
-    name='groundstation-orbitntnu',
-    version='1.0a1',
-    url='orbitntnu.com',
-    license='GPLv3',
-    author='Orbit NTNU',
-    author_email='cmo@orbitntnu.com',
-    description='Provides TCP sockets for satellite communication and ground station configuration',
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(),
-    classifiers=[
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GPLv3",
-        "Operating System :: OS Independent",
-    ],
-    python_requires='>=3.8'
-)
+if __name__ == '__main__':
+    main()

@@ -1,4 +1,31 @@
-from sat2rf1_tcp_server import logger, config
+"""
+Class providing higher level to the Sat2RF1 radio module
+"""
+
+#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#
+#  Authors:
+#  David Ferenc Bendiksen
+#  Joakim Skogø Langvand <jlangvand@gmail.com>
+#  Peter Uran
+#  Sander Aakerholt
+#
+#  This file is part of Sat2rf1-tcpserver.
+#
+#  Sat2rf1-tcpserver is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  Sat2rf1-tcpserver is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
+
+from sat2rf1_tcpserver import logger, config
 
 from .kiss import Kiss
 from .sat2rf1_constants import *
@@ -98,7 +125,7 @@ class Sat2rf1:
         For debugging. Emits a constant carrier wave with no data.
         """
         logger.info("Setting radio to continous transmit mode.")
-        self.set_radio_mode(mode=CONTINOUS_TRANSMIT_MODE)
+        self.set_radio_mode(mode=CONTINUOUS_TRANSMIT_MODE)
 
     def get_radio_mode(self):
         """
@@ -112,7 +139,7 @@ class Sat2rf1:
                 logger.info("Radio is in packet receive mode.")
             elif response == TRANSPARENT_RECEIVE_MODE:
                 logger.info("Radio is in transparent receive mode.")
-            elif response == CONTINOUS_TRANSMIT_MODE:
+            elif response == CONTINUOUS_TRANSMIT_MODE:
                 logger.info("Radio is in continous transmit mode.")
             elif response == TRANSMIT_IN_PROGRESS:
                 logger.info("Radio is in transmit in progress mode.")

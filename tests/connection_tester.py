@@ -5,6 +5,46 @@ two byte strings per connection. Test information gets printed
 to the terminal.
 """
 
+#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#
+#  Authors:
+#  David Ferenc Bendiksen
+#  Joakim Skogø Langvand <jlangvand@gmail.com>
+#  Sander Aakerholt
+#
+#  This file is part of Sat2rf1-tcpserver.
+#
+#  Sat2rf1-tcpserver is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  Sat2rf1-tcpserver is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
+#
+#  Authors:
+#  David Ferenc Bendiksen
+#
+#  This file is part of Sat2rf1-tcpserver.
+#
+#  Sat2rf1-tcpserver is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  Sat2rf1-tcpserver is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
+
 import selectors
 import socket
 import types
@@ -27,7 +67,7 @@ MESSAGES = [m1, m2]
 
 def start_connections(host, port, num_conns):
     """
-    Establishes connections to the sat2rf1-tcpserver.
+    Establishes connections to the sat2rf1_tcpserver.
     """
     server_addr = (host, port)
     for i in range(0, num_conns):
