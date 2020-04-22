@@ -106,7 +106,8 @@ class Connection:
             if recv_data:
                 logger.debug('Data received from %s:%s: %s',
                              data.addr[0], data.addr[1], repr(recv_data))
-                self._received.append(recv_data, data.outb)
+                recieved_data = (recv_data, data.outb)
+                self._received.append(recieved_data)
         if mask & selectors.EVENT_WRITE:
             if data.outb:
                 logger.debug('Sending data to %s:%s: %s',
