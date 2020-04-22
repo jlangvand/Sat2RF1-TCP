@@ -30,7 +30,7 @@ import socket
 import types
 
 # Defines logging format.
-from sat2rf1_tcpserver import logger
+from sat2rf1_tcpserver import logger, config
 
 
 class Connection:
@@ -53,6 +53,7 @@ class Connection:
         self.lsock.bind((self._host, self._port))
         self.lsock.listen()
         self.sel.register(self.lsock, selectors.EVENT_READ)
+        self.data_packet_length = config['socket']['data_packet_length']
         # Logs.
         if settings_con:
             socket_type = "settings"
@@ -92,9 +93,8 @@ class Connection:
                     self.sel.unregister(sock)
                     sock.close()
             else:
-                # TODO: Correct the package size; 250 is a placeholder number.
-                while len(recv_data) < 250:
-                    temp_data = sock.recv(250)
+                while len(recv_data) < self.data_packet_length:
+                    temp_data = sock.recv(self.data_packet_length)
                     if temp_data:
                         recv_data += temp_data
                     else:
