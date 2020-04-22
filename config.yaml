@@ -2,6 +2,8 @@ socket:
   hostname: localhost
   settings_port: 20201
   data_port: 20202
+  data_packet_length: 240 # bytes
+  command_packet_length: 8 # bytes
 
 radio:
   baud: 115200
