@@ -5,7 +5,7 @@ two byte strings per connection. Test information gets printed
 to the terminal.
 """
 
-#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#  Copyright (c) 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
 #  David Ferenc Bendiksen

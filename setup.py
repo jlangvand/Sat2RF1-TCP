@@ -1,5 +1,5 @@
 #  [description here]
-#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#  Copyright (c) 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
 #  David Ferenc Bendiksen
@@ -29,7 +29,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name='groundstation-orbitntnu',
     version='1.0a1',
-    url='orbitntnu.com',
+    url='http://orbitntnu.com/',
     license='GPLv3',
     author='Orbit NTNU',
     author_email='cmo@orbitntnu.com',
@@ -39,7 +39,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GPLv3",
+        "Development Status :: 3 - Alpha",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8'

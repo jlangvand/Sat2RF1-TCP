@@ -3,7 +3,7 @@ This contains the Connection class which can be used to
 provide socket functionality to a script or a program.
 """
 
-#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#  Copyright (c) 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
 #  David Ferenc Bendiksen
