@@ -172,10 +172,9 @@ class Sat2rf1:
         """
         Description.
         """
-    
-        dec_frames = self.kiss.decoded_frames
-
-        if len(dec_frames) != 0:
+        
+        if len(self.kiss.decoded_frames) != 0:
+            data = self.kiss.decoded_frames.pop(0)
             command = data[0:1]
             data = data[1:len(data)]
 
