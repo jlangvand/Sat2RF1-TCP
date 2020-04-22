@@ -172,13 +172,16 @@ class Sat2rf1:
         """
         Description.
         """
-        data = self.kiss.decoded_frames.pop(0)
+    
+        dec_frames = self.kiss.decoded_frames
 
-        com_dat = tuple()
-        command = data[0:1]
-        data = data[1:len(data)]
+        if len(dec_frames) != 0:
+            command = data[0:1]
+            data = data[1:len(data)]
 
-        com_dat += (command, data)
+            com_dat = (command, data)
+        else:
+            com_dat = None
 
         return com_dat
 
