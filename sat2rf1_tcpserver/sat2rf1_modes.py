@@ -2,7 +2,7 @@
 Enum for radio settings. To be implemented.
 """
 
-#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#  Copyright (c) 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
 #  David Ferenc Bendiksen

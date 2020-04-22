@@ -2,7 +2,7 @@
 Constants used in the Kiss class
 """
 
-#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#  Copyright (c) 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
 #  David Ferenc Bendiksen

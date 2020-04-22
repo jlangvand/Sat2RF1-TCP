@@ -2,7 +2,7 @@
 Class providing higher level to the Sat2RF1 radio module
 """
 
-#  Copyright © 2020 Orbit NTNU (http://orbitntnu.no)
+#  Copyright (c) 2020 Orbit NTNU (http://orbitntnu.no)
 #
 #  Authors:
 #  David Ferenc Bendiksen
