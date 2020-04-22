@@ -2,3 +2,4 @@
 log
 dumps
 dist
+*.egg-info
