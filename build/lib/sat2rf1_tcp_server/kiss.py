@@ -1,6 +1,6 @@
-import serial
 import logging
 
+import serial
 from sat2rf1_tcp_server.kiss_constants import *
 from sat2rf1_tcp_server.utils import escape_special_codes, recover_special_codes
 

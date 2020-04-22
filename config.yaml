@@ -9,10 +9,10 @@ radio:
   serial_timeout: 0.1 # seconds
 
 debug:
-  fake_radio_connection: true
+  fake_radio_connection: false
 
 logging:
   log_to_console: true
-  console_format: %(levelname)s %(message)s
-  file_format: %(asctime)s %(levelname)s %(message)s
+  console_format: '%(levelname)s %(message)s'
+  file_format: '%(asctime)s %(levelname)s %(message)s'
   file_path: log

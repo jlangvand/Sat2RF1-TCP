@@ -5,8 +5,8 @@ two byte strings per connection. Test information gets printed
 to the terminal.
 """
 
-import socket
 import selectors
+import socket
 import types
 
 # Where to connect to.
@@ -27,7 +27,7 @@ MESSAGES = [m1, m2]
 
 def start_connections(host, port, num_conns):
     """
-    Establishes connections to the sat2rf1_tcp_server.
+    Establishes connections to the sat2rf1-tcpserver.
     """
     server_addr = (host, port)
     for i in range(0, num_conns):

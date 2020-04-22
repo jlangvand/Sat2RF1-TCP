@@ -1,10 +1,9 @@
 import sys
 
-from serial import SerialException
-
 from sat2rf1_tcp_server import connection, logger, config
 from sat2rf1_tcp_server.sat2rf1 import Sat2rf1
 from sat2rf1_tcp_server.utils import dump_packet
+from serial import SerialException
 
 
 def main():
@@ -55,7 +54,13 @@ def main():
         # Assuming read_data_from_interface() returns a tuple where
         # radio_data[0] contains command byte (ignored for now),
         # radio_data[1] contains message
-        radio_data = radio.read_data_from_interface()
+        try:
+            radio_data = radio.read_data_from_interface()
+        except UnboundLocalError:
+            if config['debug']['fake_radio_connection']:
+                logger.warning('Faking radio connection! Faking a data packet.')
+                radio_data = b'\x00', b'\xFF\x00\xFF'
+
         if radio_data is not None:
             if data_pointer is not None:
                 logger.info("Got data from radio, sending to client")

@@ -1,7 +1,7 @@
 from pathlib import Path
 from time import time
 
-from .kiss_constants import FESC, FESC_TFEND, TFEND, FESC_TFESC, FEND, DATA_FRAME
+from .kiss_constants import FESC, FESC_TFEND, FESC_TFESC, FEND, DATA_FRAME
 
 
 def escape_special_codes(raw_codes):
@@ -67,8 +67,11 @@ def strip_df_start(frame):
     return frame.lstrip(DATA_FRAME).strip()
 
 
-def dump_packet(data):
-    filename = '{}.bin'.format(time())
+def dump_packet(packet):
+    data = packet[1]
+    path = 'dumps'
+    Path(path).mkdir(exist_ok=True)
+    filename = '{}/{}.bin'.format(path, time())
     f = open(filename, 'wb')
-    f.write(bytes(data))
+    f.write(data)
     f.close()

@@ -33,7 +33,7 @@ logger.addHandler(file_handler)
 Log to console
 """
 
-if config['debug']['log_to_console']:
+if config['logging']['log_to_console']:
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_formatter = logging.Formatter(config['logging']['console_format'])
     stream_handler.setFormatter(stream_formatter)

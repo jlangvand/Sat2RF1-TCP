@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='groundstation-orbit',
+    name='groundstation-orbitntnu',
     version='1.0a1',
     url='orbitntnu.com',
     license='GPLv3',
@@ -16,7 +16,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GPLv3",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.8'

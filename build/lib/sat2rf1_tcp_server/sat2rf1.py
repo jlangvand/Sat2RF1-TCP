@@ -1,6 +1,6 @@
 from sat2rf1_tcp_server import logger, config
-from .kiss import Kiss
 
+from .kiss import Kiss
 from .sat2rf1_constants import *
 
 # Define parameters for serial communication
