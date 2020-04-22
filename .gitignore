@@ -2,4 +2,5 @@
 log
 dumps
 dist
+build
 *.egg-info
