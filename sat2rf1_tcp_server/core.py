@@ -2,9 +2,9 @@ import sys
 
 from serial import SerialException
 
-from selfiesat_server import connection, logger, config
-from selfiesat_server.sat2rf1 import Sat2rf1
-from selfiesat_server.utils import dump_packet
+from sat2rf1_tcp_server import connection, logger, config
+from sat2rf1_tcp_server.sat2rf1 import Sat2rf1
+from sat2rf1_tcp_server.utils import dump_packet
 
 
 def main():
@@ -64,7 +64,3 @@ def main():
                 logger.warning("Data received from radio but no client connected!")
                 logger.info("Dumping incoming data...")
                 dump_packet(radio_data)
-
-
-if __name__ == '__main__':
-    main()

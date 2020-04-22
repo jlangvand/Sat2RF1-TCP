@@ -1,4 +1,4 @@
-from selfiesat_server import logger, config
+from sat2rf1_tcp_server import logger, config
 from .kiss import Kiss
 
 from .sat2rf1_constants import *
