@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Init script for module sat2rf1_tcpserver
 """
