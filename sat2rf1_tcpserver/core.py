@@ -69,9 +69,10 @@ def main():
         # Check for data/settings and do stuff
         tcp_data = data_socket.receive()
         if tcp_data is not None:
-            logger.info("Got a TCP packet")
-            logger.info("Message: %s", tcp_data[1])
+            data_packet = tcp_data[1]
             data_pointer = tcp_data[0]
+            logger.info("Got a TCP packet. Message: {} ({} bytes)".format(data_packet, len(bytes(data_packet))))
+            radio.transmit_data(data_packet)
 
         tcp_settings = settings_socket.receive()
         if tcp_settings is not None:
