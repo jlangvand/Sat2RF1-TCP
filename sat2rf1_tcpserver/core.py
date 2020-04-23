@@ -107,8 +107,6 @@ def main():
         except:
             logger.error('Some exception occoured!\n', exc_info=True)
 
-        logger.debug('check1 {}'.format(radio_message))
-
         if radio_message is not None:
             logger.info("Got data from radio! Message: {}".format(radio_message[1]))
             if data_pointer is not None:
