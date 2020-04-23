@@ -30,7 +30,7 @@ import socket
 import types
 
 # Defines logging format.
-from sat2rf1_tcpserver import logger, config
+from sat2rf1_tcpserver import logger
 
 
 class Connection:
@@ -49,11 +49,10 @@ class Connection:
         self.lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sel = selectors.DefaultSelector()
         # Sets up objects.
-        self.lsock.setblocking(False)  # TODO: temporarily removing this for debugging
+        self.lsock.setblocking(False)
         self.lsock.bind((self._host, self._port))
         self.lsock.listen()
         self.sel.register(self.lsock, selectors.EVENT_READ)
-        self.data_packet_length = config['socket']['data_packet_length']
         # Logs.
         if settings_con:
             socket_type = "settings"
@@ -67,11 +66,10 @@ class Connection:
         instance's listening socket is selected by the instance's selector.
         """
         conn, addr = self.lsock.accept()
-        # conn.setblocking(False) TODO: debugging
+        conn.setblocking(False)
         self.sel.register(conn, selectors.EVENT_READ | selectors.EVENT_WRITE,
                           data=types.SimpleNamespace(addr=addr, inb=b'', outb=b''))
         logger.info('Accepted connection from %s:%s.', addr[0], addr[1])
-
 
     def service_connection(self, key, mask):
         """
@@ -94,23 +92,21 @@ class Connection:
                     self.sel.unregister(sock)
                     sock.close()
             else:
-                while len(recv_data) < self.data_packet_length:  # TODO: debugging...
-                    logger.debug('recv has length of {}'.format(len(recv_data)))
-                    temp_data = sock.recv(self.data_packet_length)
-
+                # TODO: Correct the package size; 250 is a placeholder number.
+                while len(recv_data) < 250:
+                    temp_data = sock.recv(250)
                     if temp_data:
-                        logger.debug('Adding temp ({}) to recv ({})'.format(temp_data, recv_data))
                         recv_data += temp_data
-                        logger.debug('Recv is now [{}]'.format(recv_data))
                     else:
                         logger.warning('Connection to %s:%s was closed from client side.',
                                        data.addr[0], data.addr[1])
                         self.sel.unregister(sock)
                         sock.close()
+                        break
             if recv_data:
-                logger.debug('Data received from %s:%s: %s (pointer: %s)',
-                             data.addr[0], data.addr[1], repr(recv_data), data.outb)
-                self._received.append((recv_data, data.outb))
+                logger.debug('Data received from %s:%s: %s',
+                             data.addr[0], data.addr[1], repr(recv_data))
+                self._received.append((recv_data, data))
         if mask & selectors.EVENT_WRITE:
             if data.outb:
                 logger.debug('Sending data to %s:%s: %s',
@@ -141,11 +137,22 @@ class Connection:
         """
         Registers message for sending on the socket associated with data_pointer.
         """
-        data_pointer.append(message)
+        data_pointer.outb += message
 
     def receive(self):
         """
-        Pops one tuple (message, data_pointer) from the received list.
+        Pops one tuple (message, data_pointer) from the received list and returns it.
         Returns None if the received list is empty.
         """
         return self._received.pop() if self._received else None
+
+    def receive_all(self):
+        """
+        Pops all tuples (message, data_pointer) from the
+        received list and returns a list of them.
+        Returns None if the received list is empty.
+        """
+        temp = []
+        while self._received:
+            temp.append(self._received.pop())
+        return temp if temp else None
