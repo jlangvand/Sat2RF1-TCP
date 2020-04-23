@@ -106,7 +106,7 @@ class Connection:
             if recv_data:
                 logger.debug('Data received from %s:%s: %s',
                              data.addr[0], data.addr[1], repr(recv_data))
-                self._received.append((recv_data, data.outb))
+                self._received.append((recv_data, data))
         if mask & selectors.EVENT_WRITE:
             if data.outb:
                 logger.debug('Sending data to %s:%s: %s',
@@ -137,11 +137,22 @@ class Connection:
         """
         Registers message for sending on the socket associated with data_pointer.
         """
-        data_pointer.append(message)
+        data_pointer.outb += message
 
     def receive(self):
         """
-        Pops one tuple (message, data_pointer) from the received list.
+        Pops one tuple (message, data_pointer) from the received list and returns it.
         Returns None if the received list is empty.
         """
         return self._received.pop() if self._received else None
+
+    def receive_all(self):
+        """
+        Pops all tuples (message, data_pointer) from the
+        received list and returns a list of them.
+        Returns None if the received list is empty.
+        """
+        temp = []
+        while self._received:
+            temp.append(self._received.pop())
+        return temp if temp else None
