@@ -88,13 +88,15 @@ def main():
             pass
             # TODO: Add pointer to stack, do stuff with command
 
-        radio.kiss.read_and_decode()
+
 
         # Assuming read_data_from_interface() returns a tuple where
         # radio_message[0] contains command byte (ignored for now),
         # radio_message[1] contains message
         try:
             radio_message = radio.read_data_from_interface()
+            if radio_message is not None:
+                logger.debug('Radio message: {}'.format(radio_message))
         except UnboundLocalError:
             if config['debug']['fake_radio_connection']:
                 pass
@@ -102,11 +104,15 @@ def main():
                 # radio_message = b'\x00', b'\xFF\x00\xFF'
             else:
                 logger.error('Could not read from radio!')
+        except:
+            logger.error('Some exception occoured!\n', exc_info=True)
+
+        logger.debug('check1 {}'.format(radio_message))
 
         if radio_message is not None:
             logger.info("Got data from radio! Message: {}".format(radio_message[1]))
             if data_pointer is not None:
-                logger.debug('len(data_pointer) = {}'.format(len(data_pointer)))
+                # logger.debug('len(data_pointer) = {}'.format(len(data_pointer)))
                 while len(client_data_buffer) > 0:
                     logger.info('Radio messages in buffer: {}. Sending to client...'.format(len(client_data_buffer)))
                     data_socket.send(client_data_buffer.pop())  # TODO: better logic
@@ -119,3 +125,5 @@ def main():
                 logger.info("Dumping incoming data...")
                 dump_packet(radio_message)
                 client_data_buffer.append(radio_message)
+
+        radio.kiss.read_and_decode()

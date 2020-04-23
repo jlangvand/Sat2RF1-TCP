@@ -93,8 +93,8 @@ class Connection:
                     sock.close()
             else:
                 # TODO: Correct the package size; 250 is a placeholder number.
-                while len(recv_data) < 250:
-                    temp_data = sock.recv(250)
+                while len(recv_data) < 5:
+                    temp_data = sock.recv(5)
                     if temp_data:
                         recv_data += temp_data
                     else:
@@ -137,6 +137,7 @@ class Connection:
         """
         Registers message for sending on the socket associated with data_pointer.
         """
+        logger.debug('Attempting to send {} to {}'.format(message, data_pointer))
         data_pointer.outb += message
 
     def receive(self):

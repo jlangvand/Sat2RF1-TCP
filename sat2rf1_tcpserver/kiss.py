@@ -129,6 +129,7 @@ class Kiss:
                     frames)):  # Iterates trough the data in frames, recovers the special codes and appends the data to the decoded_frame list
                 logging.info("Decoding and assembling frames")
                 self.decoded_frames.append(recover_special_codes(frames[ii]))
+                logger.debug('Added frame {}'.format(recover_special_codes(frames[ii])))
 
         except KissError as e:
             print(e)
