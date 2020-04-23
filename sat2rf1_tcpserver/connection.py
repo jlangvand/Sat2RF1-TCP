@@ -49,7 +49,7 @@ class Connection:
         self.lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sel = selectors.DefaultSelector()
         # Sets up objects.
-        self.lsock.setblocking(False)
+        self.lsock.setblocking(False)  # TODO: temporarily removing this for debugging
         self.lsock.bind((self._host, self._port))
         self.lsock.listen()
         self.sel.register(self.lsock, selectors.EVENT_READ)
@@ -67,10 +67,11 @@ class Connection:
         instance's listening socket is selected by the instance's selector.
         """
         conn, addr = self.lsock.accept()
-        conn.setblocking(False)
+        # conn.setblocking(False) TODO: debugging
         self.sel.register(conn, selectors.EVENT_READ | selectors.EVENT_WRITE,
                           data=types.SimpleNamespace(addr=addr, inb=b'', outb=b''))
         logger.info('Accepted connection from %s:%s.', addr[0], addr[1])
+
 
     def service_connection(self, key, mask):
         """
@@ -93,19 +94,22 @@ class Connection:
                     self.sel.unregister(sock)
                     sock.close()
             else:
-                while len(recv_data) < self.data_packet_length:
+                while len(recv_data) < self.data_packet_length:  # TODO: debugging...
+                    logger.debug('recv has length of {}'.format(len(recv_data)))
                     temp_data = sock.recv(self.data_packet_length)
+
                     if temp_data:
+                        logger.debug('Adding temp ({}) to recv ({})'.format(temp_data, recv_data))
                         recv_data += temp_data
+                        logger.debug('Recv is now [{}]'.format(recv_data))
                     else:
                         logger.warning('Connection to %s:%s was closed from client side.',
                                        data.addr[0], data.addr[1])
                         self.sel.unregister(sock)
                         sock.close()
-                        break
             if recv_data:
-                logger.debug('Data received from %s:%s: %s',
-                             data.addr[0], data.addr[1], repr(recv_data))
+                logger.debug('Data received from %s:%s: %s (pointer: %s)',
+                             data.addr[0], data.addr[1], repr(recv_data), data.outb)
                 self._received.append((recv_data, data.outb))
         if mask & selectors.EVENT_WRITE:
             if data.outb:

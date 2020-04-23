@@ -29,6 +29,7 @@ import logging
 
 import serial
 
+from sat2rf1_tcpserver import logger
 from sat2rf1_tcpserver.kiss_constants import *
 from sat2rf1_tcpserver.utils import escape_special_codes, recover_special_codes
 
@@ -53,6 +54,7 @@ class Kiss:
 
         ???This is also used to transmit data by using the DATA setting???.
         """
+        logger.debug('Constructing a frame with header [{}] and value [{}]...'.format(setting, value))
 
         frame = b''.join([
             FEND,  # First header
@@ -62,8 +64,11 @@ class Kiss:
             FEND  # Last header
         ])
 
+        logger.debug('Frame: [{}]\nTest: [{}]'.format(frame, FEND + setting + escape_special_codes(value) + FEND))
+
         # TODO: Remove this interface and write to queue instead
         # self.interface.write(frame)
+        logger.debug('Adding frame to queue: {}'.format(frame))
         self.write_queue.append(frame)
         return frame
 
@@ -80,51 +85,61 @@ class Kiss:
         frames = []
         read_buffer = bytes()
 
-        while True:
-            try:
-                response = self.interface.readline()  # returns a byte string
+        try:
+            response = self.interface.readline()  # returns a byte string
 
-                # Test redundancy
-                if type(response) != type(bytes()):
-                    raise KissError("Respons != bytes(), will terminate.")
+            if len(response) < 1:
+                # logger.debug('No data found on interface')
+                return
 
-                split_data = response.split(FEND)  # Assumes that 'response' is a byte string
-                fends = len(split_data)
+            logger.debug('Raw response: [{}]'.format(response))
 
-                if fends == 1:
-                    logging.info("No FEND found, assuming the entire response is a partial frame")
-                    read_buffer += split_data[0]
+            # Test redundancy
 
-                else:
-                    if split_data[0]:  # Response starts with an incomplete frame; concatenate and add frame
-                        logging.info("End of frame found, joining this with incomplete frame in buffer")
-                        frames.append(b''.join([read_buffer, split_data[0]]))
-                        read_buffer = bytes()
+            if type(response) != type(bytes()):
+                raise KissError("Respons != bytes(), will terminate.")
 
-                    if fends >= 3:  # Handles one or more complete frames
-                        logging.info("Two or more FENDs found, expecting at least one complete frame")
-                        for i in range(1, fends - fends % 3):
-                            if split_data[i]:
-                                logging.info("Found a complete frame")
-                                frames.append(split_data[i])
+            split_data = response.split(FEND)  # Assumes that 'response' is a byte string
+            fends = len(split_data)
 
-                    if split_data[fends - 1]:  # Ends wih a partial frame; add to buffer
-                        logging.info("Found an incomplete frame at end of response, adding this to buffer")
-                        read_buffer += split_data[fends - 1]
+            logger.debug('len(split_data) = {}'.format(len(split_data)))
 
-                for ii in range(len(
-                        frames)):  # Iterates trough the data in frames, recovers the special codes and appends the data to the decoded_frame list
-                    logging.info("Decoding and assembling frames")
-                    self.decoded_frames.append(recover_special_codes(frames[ii]))
+            if fends == 1:
+                logging.info("No FEND found, assuming the entire response is a partial frame")
+                read_buffer += split_data[0]
 
-            except KissError as e:
-                print(e)
-                break
+            else:
+                if split_data[0]:  # Response starts with an incomplete frame; concatenate and add frame
+                    logging.info("End of frame found, joining this with incomplete frame in buffer")
+                    frames.append(b''.join([read_buffer, split_data[0]]))
+                    read_buffer = bytes()
+
+                if fends >= 3:  # Handles one or more complete frames
+                    logging.info("Two or more FENDs found, expecting at least one complete frame")
+                    for i in range(1, fends - fends % 3):
+                        if split_data[i]:
+                            logging.info("Found a complete frame")
+                            frames.append(split_data[i])
+
+                if split_data[fends - 1]:  # Ends wih a partial frame; add to buffer
+                    logging.info("Found an incomplete frame at end of response, adding this to buffer")
+                    read_buffer += split_data[fends - 1]
+
+            for ii in range(len(
+                    frames)):  # Iterates trough the data in frames, recovers the special codes and appends the data to the decoded_frame list
+                logging.info("Decoding and assembling frames")
+                self.decoded_frames.append(recover_special_codes(frames[ii]))
+
+        except KissError as e:
+            print(e)
 
     # TODO: Check this. not tested
     def write_frames_to_radio(self):
+        logger.debug('{} frames in queue, writing to radio...'.format(len(self.write_queue)))
         for frame in self.write_queue:
+            logger.debug('Writing frame [{}]'.format(repr(frame)))
             self.interface.write(frame)
+        self.write_queue.clear()
 
     def write_and_return_response(self, frame):
         self.interface.write(frame)

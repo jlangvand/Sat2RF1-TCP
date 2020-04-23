@@ -46,14 +46,19 @@ def main():
     settings_port = config['socket']['settings_port']
     data_port = config['socket']['data_port']
 
+    client_data_buffer = []
+
     settings_socket = connection.Connection(hostname, settings_port, True)
     data_socket = connection.Connection(hostname, data_port)
 
     data_pointer = None
+    radio_message = None
 
     logger.info("Setting up radio...")
     try:
         radio = Sat2rf1()
+        logger.info('Testing radio...')
+        # radio.test_radio()
     except SerialException as e:
         logger.error('Failed to connect to radio:')
         logger.error(e.strerror)
@@ -69,31 +74,48 @@ def main():
         # Check for data/settings and do stuff
         tcp_data = data_socket.receive()
         if tcp_data is not None:
-            data_packet = tcp_data[1]
-            data_pointer = tcp_data[0]
+            logger.debug('tcp_data is not None')
+            data_packet = tcp_data[0]
+            data_pointer = tcp_data[1]
             logger.info("Got a TCP packet. Message: {} ({} bytes)".format(data_packet, len(bytes(data_packet))))
-            radio.transmit_data(data_packet)
+            if not config['debug']['fake_radio_connection']:
+                radio.transmit_data(data_packet)
+        # else:
+        #    logger.debug('tcp_data is None')
 
         tcp_settings = settings_socket.receive()
         if tcp_settings is not None:
             pass
             # TODO: Add pointer to stack, do stuff with command
 
+        radio.kiss.read_and_decode()
+
         # Assuming read_data_from_interface() returns a tuple where
-        # radio_data[0] contains command byte (ignored for now),
-        # radio_data[1] contains message
+        # radio_message[0] contains command byte (ignored for now),
+        # radio_message[1] contains message
         try:
-            radio_data = radio.read_data_from_interface()
+            radio_message = radio.read_data_from_interface()
         except UnboundLocalError:
             if config['debug']['fake_radio_connection']:
-                logger.warning('Faking radio connection! Faking a data packet.')
-                radio_data = b'\x00', b'\xFF\x00\xFF'
+                pass
+                # logger.warning('Faking radio connection! Faking a data packet.')
+                # radio_message = b'\x00', b'\xFF\x00\xFF'
+            else:
+                logger.error('Could not read from radio!')
 
-        if radio_data is not None:
+        if radio_message is not None:
+            logger.info("Got data from radio! Message: {}".format(radio_message[1]))
             if data_pointer is not None:
+                logger.debug('len(data_pointer) = {}'.format(len(data_pointer)))
+                while len(client_data_buffer) > 0:
+                    logger.info('Radio messages in buffer: {}. Sending to client...'.format(len(client_data_buffer)))
+                    data_socket.send(client_data_buffer.pop())  # TODO: better logic
                 logger.info("Got data from radio, sending to client")
-                data_socket.send(radio_data[1], data_pointer)
+                logger.debug('Sending {} to {}'.format(radio_message[1], data_pointer))
+                data_socket.send(radio_message[1], data_pointer)
+
             else:
                 logger.warning("Data received from radio but no client connected!")
                 logger.info("Dumping incoming data...")
-                dump_packet(radio_data)
+                dump_packet(radio_message)
+                client_data_buffer.append(radio_message)

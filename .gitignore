@@ -4,3 +4,4 @@ dumps
 dist
 build
 *.egg-info
+upload_release

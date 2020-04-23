@@ -28,7 +28,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='groundstation-orbitntnu',
-    version='1.0a1',
+    version='1.1a12',
     url='http://orbitntnu.com/',
     license='GPLv3',
     author='Orbit NTNU',

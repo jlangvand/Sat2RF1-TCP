@@ -153,7 +153,9 @@ class Sat2rf1:
         """
         Pass data to the radio for transmission
         """
+        logger.debug("Creating a frame with a payload of {} bytes".format(len(data)))
         self.kiss.create_frame(setting=DATA_FRAME, value=data)
+        self.kiss.write_frames_to_radio()
 
         # try:
         # response = self.kiss.write_setting(setting=DATA, value=data)
@@ -206,6 +208,28 @@ class Sat2rf1:
                 logger.info('Set frequency to ' + str(int(freq / 1e6)) + ' MHz.')
                 # TODO: Perhaps update some frquency variable so it is easy to access?
                 self.carrier_frequency = freq
+
+    def test_radio(self):
+        frame = self.kiss.create_frame(GET_FREQUENCY, b'')
+        logger.debug('Writing frame [{}] to radio (get frequency)...'.format(frame))
+        self.kiss.write_frames_to_radio()
+        self.kiss.read_and_decode()
+        for dec in self.kiss.decoded_frames:
+            logger.info('Frequency: {}Mhz'.format(int.from_bytes(dec, byteorder='big', signed=False) / 1e6))
+
+        frame = self.kiss.create_frame(GET_MODE, b'')
+        logger.debug('Writing frame [{}] to radio (get mode)...'.format(frame))
+        self.kiss.write_frames_to_radio()
+        self.kiss.read_and_decode()
+        for dec in self.kiss.decoded_frames:
+            logger.info('Mode: {}'.format(int.from_bytes(dec, byteorder='big', signed=False)))
+
+        frame = self.kiss.create_frame(GET_POWER, b'')
+        logger.debug('Writing frame [{}] to radio (get power)...'.format(frame))
+        self.kiss.write_frames_to_radio()
+        self.kiss.read_and_decode()
+        for dec in self.kiss.decoded_frames:
+            logger.info('Power: {}dBm'.format(int.from_bytes(dec, byteorder='big', signed=True)))
 
 
 class RadioError(Exception):

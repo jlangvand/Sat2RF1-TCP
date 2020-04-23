@@ -24,6 +24,7 @@ Constants used in the Sat2rf1 class
 #
 #  You should have received a copy of the GNU General Public License
 #  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
+import enum
 
 """
 SAT2RF1 commands from data sheet.
@@ -57,3 +58,18 @@ PACKET_RECEIVE_MODE = b'\x00'
 TRANSPARENT_RECEIVE_MODE = b'\x01'
 CONTINUOUS_TRANSMIT_MODE = b'\x02'
 TRANSMIT_IN_PROGRESS = b'\x03'
+
+
+class Commands(enum.Enum):
+    DATA_FRAME = b'\x00'
+    SET_FREQUENCY = b'\x20'
+    GET_FREQUENCY = b'\x21'
+    SET_POWER = b'\x22'
+    GET_POWER = b'\x23'
+    GET_RSSI = b'\x24'
+    PING = b'\x25'
+    DEBUG = b'\x26'
+    SET_CORR_COEF = b'\x27'
+    GET_CORR_COEF = b'\x28'
+    SET_MODE = b'\x29'
+    GET_MODE = b'\x30'

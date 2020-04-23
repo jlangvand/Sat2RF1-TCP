@@ -23,8 +23,11 @@ Entry point for module sat2rf1_tcpserver
 #
 #  You should have received a copy of the GNU General Public License
 #  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
-
+from sat2rf1_tcpserver import logger
 from sat2rf1_tcpserver.core import main
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        logger.info("Process terminated by user. Bye!")
