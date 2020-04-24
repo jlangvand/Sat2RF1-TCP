@@ -73,3 +73,6 @@ class Commands(enum.Enum):
     GET_CORR_COEF = b'\x28'
     SET_MODE = b'\x29'
     GET_MODE = b'\x30'
+
+
+REIDAR_WAS_HERE = True

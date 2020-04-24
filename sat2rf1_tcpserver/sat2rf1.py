@@ -27,8 +27,10 @@ Class providing higher level to the Sat2RF1 radio module
 
 from sat2rf1_tcpserver import logger, config
 
-from .kiss import Kiss
+from .kiss import Kiss, FEND
 from .sat2rf1_constants import *
+
+from .utils import recover_special_codes
 
 # Define parameters for serial communication
 baud = config['radio']['baud']
@@ -47,6 +49,8 @@ class Sat2rf1:
         except FileNotFoundError as e:
             logger.error('Could not find radio! Make sure it is connected.')
             raise RadioError('Radio might not be connected: ' + e)
+
+        self._packets_waiting = []
 
     def set_frequency(self, freq):
         """
@@ -174,7 +178,7 @@ class Sat2rf1:
         """
         Description.
         """
-        
+
         if len(self.kiss.decoded_frames) != 0:
             data = self.kiss.decoded_frames.pop(0)
             command = data[0:1]
@@ -208,6 +212,47 @@ class Sat2rf1:
                 logger.info('Set frequency to ' + str(int(freq / 1e6)) + ' MHz.')
                 # TODO: Perhaps update some frquency variable so it is easy to access?
                 self.carrier_frequency = freq
+
+    def __get_frame(self):
+        first_byte = self.kiss.interface.read(1)
+        logger.debug('First byte: {}'.format(first_byte))
+
+        if not first_byte == FEND:
+            logger.error('Frame desync! Returned frame might be incomplete')
+
+        payload = self.kiss.interface.read_until(FEND)
+
+        if payload[:1] == FEND:
+            logger.error('Frame desync! Lost at least one frame from radio.')
+            payload = self.kiss.interface.read_until(FEND).replace(b'\xc0', b'')
+
+        self.__unpack_and_stash_frame(payload)
+
+    def __unpack_and_stash_frame(self, payload):
+        payload = payload.replace(FEND, b'')
+        payload = recover_special_codes(payload)
+        package = payload[:1], payload[1:]
+        self._packets_waiting.append(payload)
+
+    def has_data(self):
+        """
+        Returns the number of bytes waiting on the serial port.
+        One frame is at least three bytes.
+
+        :return: Number of bytes
+        """
+        return self.kiss.interface.in_waiting
+
+    def cycle(self):
+        """
+        Check the serial interface for frames, add incoming frames to queue
+
+        :return: Number of frames in queue
+        """
+        if self.has_data() >= 3:  # Minimum length of a complete frame
+            self.__get_frame()  # Reads one frame from the radio and adds it to the queue
+
+        return self._packets_waiting
 
     def test_radio(self):
         frame = self.kiss.create_frame(GET_FREQUENCY, b'')
