@@ -25,6 +25,7 @@ Assorted helper functions
 #  along with Sat2rf1-tcpserver.  If not, see <https://www.gnu.org/licenses/>.
 
 from pathlib import Path
+
 from time import time
 
 from .kiss_constants import FESC, FESC_TFEND, FESC_TFESC, FEND, DATA_FRAME
@@ -101,3 +102,27 @@ def dump_packet(packet):
     f = open(filename, 'wb')
     f.write(data)
     f.close()
+
+
+def radio_error_code_handler(command, status):
+    if command == SET_MODE:
+        setting = 'mode'
+
+    elif command == SET_FREQUENCY:
+        setting = 'frequency'
+
+    elif command == SET_POWER:
+        setting = 'power'
+
+    elif command == SET_CORR_COEF:
+        setting = 'correlation coefficient'
+
+    else:
+        logger.error('Invalid command code')
+        return
+
+    if status == b'\x00':
+        logger.info('Setting {} is OK'.format(setting))
+
+    else:
+        logger.error('Failed to set {}, error code {}'.format(setting, status))

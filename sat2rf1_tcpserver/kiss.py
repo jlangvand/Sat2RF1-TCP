@@ -41,7 +41,7 @@ class Kiss:
 
     def __init__(self, port, baud, timeout):
         self.interface = serial.Serial(port=port, baudrate=baud, timeout=timeout)
-        logging.info('Connected to radio')
+        logging.info('Opened serial port {}'.format(self.interface.name))
 
         # TODO: Add some kind of queue for read and write here
         self.write_queue = []

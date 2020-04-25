@@ -30,16 +30,6 @@ DIR_FROM_RADIO = 1
 
 
 class Sat2rf1Command:
-    data_type = dict({Commands.SET_FREQUENCY: (False, 32),
-                      Commands.GET_FREQUENCY: (False, 32),
-                      Commands.SET_POWER: (True, 8),
-                      Commands.GET_POWER: (True, 8),
-                      Commands.GET_RSSI: (False, 8),
-                      Commands.PING: (False, 32),
-                      Commands.SET_CORR_COEF: (False, 8),
-                      Commands.GET_CORR_COEF: (False, 8),
-                      Commands.SET_MODE: (False, 8),
-                      Commands.GET_MODE: (False, 8)})
 
     # Response to SET_* is always uint8
 

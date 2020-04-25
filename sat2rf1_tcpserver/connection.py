@@ -30,7 +30,7 @@ import socket
 import types
 
 # Defines logging format.
-from sat2rf1_tcpserver import logger
+from sat2rf1_tcpserver import logger, config
 
 
 class Connection:
@@ -92,9 +92,8 @@ class Connection:
                     self.sel.unregister(sock)
                     sock.close()
             else:
-                # TODO: Correct the package size; 250 is a placeholder number.
-                while len(recv_data) < 5:
-                    temp_data = sock.recv(5)
+                while len(recv_data) < config['socket']['data_packet_length']:
+                    temp_data = sock.recv(config['socket']['data_packet_length'])
                     if temp_data:
                         recv_data += temp_data
                     else:
@@ -139,6 +138,9 @@ class Connection:
         """
         logger.debug('Attempting to send {} to {}'.format(message, data_pointer))
         data_pointer.outb += message
+
+    def send_to_all(self):
+        self.sel.get_map()
 
     def receive(self):
         """
